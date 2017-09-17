@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Web Code Player</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+	
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+	<style type="text/css">
+		body {
+        	margin: 0;
+        	padding: 0;
+        	font-family: Arial, sans-serif;
+		}
+		#headingBar {
+    		margin: 0;
+    		padding: 0;
+    		background-color: #EEEEEE;
+    		height: 60px;
+    		width: 100%;
+  		  }
+        #logo {
+	        float: left;
+	        margin: 0;
+	        padding: 15px 0px 0px 15px;
+	        font-size: 150%;
+	        font-weight: bold;
+        }
+		#sectionButtonContainer {
+        	margin: 0 auto;
+        	width: 284px;
+        	padding-top: 12px;
+        }
+    	.sectionButton {
+    		float: left;
+          	margin: 0;
+    		padding: 9px 7px 7px 5px;
+        	border: 1px solid grey;
+        	cursor: pointer;
+    	}
+        .selectedButton {
+        	background-color: #EBF4FF;
+        }
+    	.highlightButton {
+        	background-color: grey;
+        }
+
+		.noLeftBorder {
+    		border-left: none;
+    	}
+        .noRightBorder {
+        	border-right: none !important;
+        }
+        .roundLeftBorder {
+        	border-top-left-radius: 5px;
+        	border-bottom-left-radius: 5px;
+        }
+        .roundRightBorder {
+        	border-top-right-radius: 5px;
+        	border-bottom-right-radius: 5px;
+        }
+    	.clear {
+    		clear: both;
+    	}
+    	.section {
+        	margin: 0;
+        	float: left;
+        }
+        .sectionHeading {
+	        margin: 0;
+	        padding: 7px 0px 7px 7px;
+	        float: left;
+	        border-right: 1px solid #EEEEEE;
+	        color: grey;
+        }
+
+        textarea {
+	    	border-top: none;
+	        border-left: none;
+	        border-color: #EEEEEE;
+	    	font-family: Arial, sans-serif;
+	        font-size: 125%;
+	        resize: none;
+	        padding-left: 7px;
+	        padding-top: 7px;
+	        margin: 0;
+    	}
+
+        .hidden, .hideHeading {
+        	display: none;
+        }
+
+        iframe {
+	        border: none;
+	        padding: 0;
+	        margin: 0;
+        }
+
+	</style>
+</head>
+<body onload="initPage()">
+
+    <!-- Initial load has just HTML and OUTPUT sections loaded (selectedButton) -->
+	<div id="headingBar">
+		<div id="logo">Web CodePlayer</div>
+		<div id="sectionButtonContainer">	
+			<div class="sectionButton roundLeftBorder selectedButton" id="htmlButton">
+                HTML
+			</div>
+			<div class="sectionButton noLeftBorder" id="cssButton">
+                CSS
+			</div>
+			<div class="sectionButton noLeftBorder" id="jsButton">
+                JavaScript
+			</div>
+			<div class="sectionButton noLeftBorder roundRightBorder selectedButton" id="outputButton">
+                Output
+			</div>
+		</div>
+	</div>
+
+	<div class="clear"></div>
+    
+	<div id="headingContainer">
+		<p class="sectionHeading" id="htmlHeading">HTML</p>
+		<p class="sectionHeading hideHeading" id="cssHeading">CSS</p>
+		<p class="sectionHeading hideHeading" id="jsHeading">Javascript</p>
+		<p class="sectionHeading noRightBorder" id="outputHeading">Output</p>
+	</div>
+
+  	<div class="clear"></div>
+  	<div id="mainContainer">
+		<textarea class="section" id="htmlSection"><h1 id="head1">HTML code here</h1></textarea>
+		<textarea class="section hidden" id="cssSection">h1 { color: yellow; width:250px; }</textarea>
+		<textarea class="section hidden" id="jsSection">document.getElementById("head1").style.backgroundColor = "black";</textarea>
+		<iframe sandbox="allow-scripts allow-forms allow-same-origin" class="section" id="outputSection" src=""></iframe>
+	</div>
+	<script type="text/javascript">
+		// Any update to the code textareas need to update the output section 
+    	$("#htmlSection").on('change keyup paste', updateOutput);
+    	$("#cssSection").on('change keyup paste', updateOutput);
+    	$("#jsSection").on('change keyup paste', updateOutput);
+
+    	// On a window resize, need to reset the height and width for the sections
+    	$(window).resize(function() {
+    		setHeightWidth();
+    	})
+
+    	// Highlight the buttons on hover
+    	$(".sectionButton").hover(
+    		function () {
+        		$(this).addClass("highlightButton");
+    		},
+    		function () {
+    			$(this).removeClass("highlightButton");
+    		}
+    	)
+
+    	// Clicking any section button toggles off/on the appropriate section and its heading
+    	$(".sectionButton").click(toggleSections);
+
+    	function toggleSections() {
+	        var buttonClicked = $(this).attr("id");
+	        var baseId = buttonClicked.substring(0, buttonClicked.indexOf("Button"));
+	        var sectionId = "#" + baseId + "Section";
+	        var headingId = "#" + baseId + "Heading";
+
+	        if ($(this).hasClass("selectedButton")) {
+	          $(this).removeClass("selectedButton");
+	          $(sectionId).addClass("hidden");
+	          $(headingId).addClass("hideHeading");
+	        } else {
+	          $(this).addClass("selectedButton");
+	          $(sectionId).removeClass("hidden");
+	          $(headingId).removeClass("hideHeading");
+	        }
+	        setHeightWidth();
+	        $(this).removeClass("highlightButton");
+      	}
+
+      	function setHeightWidth() {
+	        var colWidth = calcWidth();
+
+	        var colHeight = ($(window).height() - $("#headingBar").height() - 43);
+
+	        $(".section").css({"width":colWidth-9, "height":colHeight});
+	        $(".sectionHeading").css("width", colWidth - 7);
+      	}
+
+    	function calcWidth() {
+        	// THe jQuery window width is larger on start-up and maximize than it should be! js seems to be consistent!
+        	//var winWidth = $(window).width();
+        	var winWidth = window.innerWidth;
+        	return (winWidth / (4 - $(".hidden").length)-10);
+      	}
+
+      	function updateOutput() {
+        	$("#outputSection").contents().find("html").html(
+            	"<html><head><style type='text/css'>" + $("#cssSection").val() + 
+            	"</style></head><body>" + $("#htmlSection").val() + "</body></html>");
+        	// Run the JavaScript inside the output iframe
+        	document.getElementById("outputSection").contentWindow.eval($("#jsSection").val());
+      	}
+        
+    	function initPage() {
+        	setHeightWidth();
+        	updateOutput();
+      	}
+	</script>
+</body>
+
+</html>
