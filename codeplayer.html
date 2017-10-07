@@ -132,12 +132,15 @@
 	</div>
 
   	<div class="clear"></div>
-  	<div id="mainContainer">
+
+  	<!-- Code areas are text areas, and the OUTPUT area is a special iframe -->
+    <div id="mainContainer">
 		<textarea class="section" id="htmlSection"><h1 id="head1">HTML code here</h1></textarea>
 		<textarea class="section hidden" id="cssSection">h1 { color: yellow; width:250px; }</textarea>
 		<textarea class="section hidden" id="jsSection">document.getElementById("head1").style.backgroundColor = "black";</textarea>
 		<iframe sandbox="allow-scripts allow-forms allow-same-origin" class="section" id="outputSection" src=""></iframe>
 	</div>
+
 	<script type="text/javascript">
 		// Any update to the code textareas need to update the output section 
     	$("#htmlSection").on('change keyup paste', updateOutput);
@@ -162,25 +165,32 @@
     	// Clicking any section button toggles off/on the appropriate section and its heading
     	$(".sectionButton").click(toggleSections);
 
-    	function toggleSections() {
+    	// Toggle ON or OFF a Section and Heading for Section.
+        function toggleSections() {
 	        var buttonClicked = $(this).attr("id");
 	        var baseId = buttonClicked.substring(0, buttonClicked.indexOf("Button"));
 	        var sectionId = "#" + baseId + "Section";
 	        var headingId = "#" + baseId + "Heading";
 
 	        if ($(this).hasClass("selectedButton")) {
-	          $(this).removeClass("selectedButton");
-	          $(sectionId).addClass("hidden");
-	          $(headingId).addClass("hideHeading");
+                // If button is selected - then need to UNSELECT it
+                $(this).removeClass("selectedButton");
+                // Hide the section (Add the hidden class)
+                $(sectionId).addClass("hidden");
+                $(headingId).addClass("hideHeading");
 	        } else {
-	          $(this).addClass("selectedButton");
-	          $(sectionId).removeClass("hidden");
-	          $(headingId).removeClass("hideHeading");
+                // If button is NOT selected - then need to SELECT it
+                $(this).addClass("selectedButton");
+                // Enable the section (make it NOT hidden)
+                $(sectionId).removeClass("hidden");
+                $(headingId).removeClass("hideHeading");
 	        }
 	        setHeightWidth();
 	        $(this).removeClass("highlightButton");
       	}
 
+        // Calculate the width and height of the browser window, so as to calculate the
+        // width and height for each section
       	function setHeightWidth() {
 	        var colWidth = calcWidth();
 
