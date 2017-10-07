@@ -175,13 +175,13 @@
 	        if ($(this).hasClass("selectedButton")) {
                 // If button is selected - then need to UNSELECT it
                 $(this).removeClass("selectedButton");
-                // Hide the section (Add the hidden class)
+                // Hide the section and its heading (Add the hidden class)
                 $(sectionId).addClass("hidden");
                 $(headingId).addClass("hideHeading");
 	        } else {
                 // If button is NOT selected - then need to SELECT it
                 $(this).addClass("selectedButton");
-                // Enable the section (make it NOT hidden)
+                // Enable the section and the section heading (make it NOT hidden)
                 $(sectionId).removeClass("hidden");
                 $(headingId).removeClass("hideHeading");
 	        }
